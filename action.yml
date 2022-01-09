@@ -1,13 +1,16 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'Pull Request title checker'
+description: 'Checks that the Pull Request title starts with a Jira ticket'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  jira-project-key:
+    description: 'The Jira project key of the repository (i.e. SYC)'
     required: true
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+  no-ticket-prefix:
+    description: 'The prefix allowed for Pull Requests without a Jira ticket (i.e. NoTicket)'
+    required: false
+  ignore-case:
+    description: 'Whether to do a case insensitive check or not'
+    required: false
+    default: false
 runs:
   using: 'node12'
   main: 'index.js'
