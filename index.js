@@ -18,7 +18,7 @@ try {
   if (caseInsensitiveMode) {
     pullRequestTitle = pullRequestTitle.toUpperCase();
     jiraProjectKey = jiraProjectKey.toUpperCase();
-	noTicketPrefix = noTicketPrefix?.toUpperCase();
+	noTicketPrefix = (noTicketPrefix == null) ? noTicketPrefix : noTicketPrefix.toUpperCase();
   }
   
   let passes = false;
