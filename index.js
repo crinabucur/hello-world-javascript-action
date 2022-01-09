@@ -12,7 +12,7 @@ try {
   const payload = JSON.stringify(github.context.payload, undefined, 2);
   console.log(`The event payload: ${payload}`);
   
-  let pullRequestTitle = getPullRequestTitle();
+  let pullRequestTitle = getHeadCommit(); // getPullRequestTitle();
   
   let caseInsensitiveMode = (ignoreCase === 'true');
   console.log(`Ignore case set to ${caseInsensitiveMode}`);
@@ -54,4 +54,13 @@ function getPullRequestTitle() {
     throw new Error("This action should only be run with Pull Request events");
   }
   return pullRequest.title;
+}
+
+function getHeadCommit() {
+  let headCommit = github.context.payload.head_commit;
+  core.debug(`Head Commit: ${JSON.stringify(github.context.payload.head_commit)}`);
+  if (headCommit == undefined || headCommit.message == undefined) {
+    throw new Error("This action should only be run with push events");
+  }
+  return headCommit.message;
 }
