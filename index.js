@@ -12,7 +12,7 @@ try {
   const payload = JSON.stringify(github.context.payload, undefined, 2);
   console.log(`The event payload: ${payload}`);
   
-  let pullRequestTitle = getHeadCommit(); // getPullRequestTitle();
+  let pullRequestTitle = getPullRequestTitle(); // getHeadCommit();
   
   let caseInsensitiveMode = (ignoreCase === 'true');
   console.log(`Ignore case set to ${caseInsensitiveMode}`);
@@ -34,13 +34,15 @@ try {
     }
   }
   
-  if (passes === false){
+  if (passes === false) {
     let pattern = "^\\[" + jiraProjectKey + "-[0-9]+\\]\\ [^\\ ]";
-    let regExp = caseInsensitiveMode ? new RegExp(pattern,"ig") : new RegExp(pattern,"g");
+    let regExp = new RegExp(pattern, caseInsensitiveMode ? "ig" : "g");
 
     passes = regExp.test(pullRequestTitle);
-    if (passes === false)
-      core.setFailed('Commit message does not start with a Jira ticket (i.e. [SYC-123] YourMessage).'); // Pull Request title...
+    if (passes === false) {
+	  core.setFailed('Pull Request title does not start with a Jira ticket (i.e. [SYC-123] YourMessage).'); // Commit message...
+	}
+    core.info("Pull Request title Jira ticket validation passed");
   }
 } catch (error) {
   core.setFailed(error.message);
