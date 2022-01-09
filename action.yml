@@ -8,7 +8,11 @@ inputs:
     description: 'The prefix allowed for Pull Requests without a Jira ticket (i.e. NoTicket)'
     required: false
   ignore-case:
-    description: 'Whether to do a case insensitive check or not'
+    description: 'Perform a case insensitive check'
+    required: false
+    default: false
+  verbose:
+    description: 'Log the JSON webhook payload for the event that triggered the workflow'
     required: false
     default: false
 runs:

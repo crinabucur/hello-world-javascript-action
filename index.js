@@ -6,13 +6,11 @@ try {
   let jiraProjectKey = core.getInput('jira-project-key');
   let noTicketPrefix = core.getInput('no-ticket-prefix');
   const ignoreCase = core.getInput('ignore-case');
-  //const verbose = core.getInput('verbose');
+  const verbose = core.getInput('verbose');
 
-  // Get the JSON webhook payload for the event that triggered the workflow
-  const payload = JSON.stringify(github.context.payload, undefined, 2);
-  console.log(`The event payload: ${payload}`);
+  logPayload(verbose);
   
-  let pullRequestTitle = getPullRequestTitle(); // getHeadCommit();
+  let pullRequestTitle = getPullRequestTitle();
   
   let caseInsensitiveMode = (ignoreCase === 'true');
   console.log(`Ignore case set to ${caseInsensitiveMode}`);
@@ -20,18 +18,15 @@ try {
   if (caseInsensitiveMode) {
     pullRequestTitle = pullRequestTitle.toUpperCase();
     jiraProjectKey = jiraProjectKey.toUpperCase();
+	noTicketPrefix = noTicketPrefix?.toUpperCase();
   }
   
   let passes = false;
 
-  if (noTicketPrefix != null) {
-    if (caseInsensitiveMode) {
-      noTicketPrefix = noTicketPrefix.toUpperCase();
-    }
-
-    if (pullRequestTitle.startsWith('[' + noTicketPrefix + ']') === true) {
-      passes = true;
-    }
+  // Check for no-ticket indication match first, to avoid an unnecessary computationally expensive RegEx 
+  // TODO: should check for 1 blank space and at least 1 char after that too
+  if (noTicketPrefix != null && pullRequestTitle.startsWith('[' + noTicketPrefix + ']') === true) {
+    passes = true;
   }
   
   if (passes === false) {
@@ -40,9 +35,8 @@ try {
 
     passes = regExp.test(pullRequestTitle);
     if (passes === false) {
-	  core.setFailed('Pull Request title does not start with a Jira ticket (i.e. [SYC-123] YourMessage).'); // Commit message...
+	  core.setFailed(getFormattingFailureMessage(pullRequestTitle, jiraProjectKey, noTicketPrefix));
 	}
-    core.info("Pull Request title Jira ticket validation passed");
   }
 } catch (error) {
   core.setFailed(error.message);
@@ -58,11 +52,19 @@ function getPullRequestTitle() {
   return pullRequest.title;
 }
 
-function getHeadCommit() {
-  let headCommit = github.context.payload.head_commit;
-  core.debug(`Head Commit: ${JSON.stringify(github.context.payload.head_commit)}`);
-  if (headCommit == undefined || headCommit.message == undefined) {
-    throw new Error("This action should only be run with push events");
+function logPayload(verbose) {
+  if (verbose === false) {
+	console.log(`Verbose set to false, skipping Payload logging`); 
+	return;
   }
-  return headCommit.message;
+	
+  // Get the JSON webhook payload for the event that triggered the workflow
+  const payload = JSON.stringify(github.context.payload, undefined, 2);
+  console.log(`The event payload: ${payload}`);
+}
+
+function getFormattingFailureMessage(pullRequestTitle, jiraProjectKey, noTicketPrefix) {
+  let message = `Pull Request title "${pullRequestTitle}" does not start with a Jira ticket (i.e. [${jiraProjectKey}-123] YourMessage)`;
+  if (noTicketPrefix != null)
+	  message += ` or a no ticket indication (i.e. [${noTicketPrefix}] YourMessage)`;
 }
