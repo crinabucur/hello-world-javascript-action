@@ -40,7 +40,7 @@ try {
 
     passes = regExp.test(commitName);
     if (passes === false)
-      core.setFailed('Invalid pull request prefix!');
+      core.setFailed('Commit message does not start with a Jira ticket (i.e. [SYC-123] YourMessage).'); // Pull Request title...
   }
 } catch (error) {
   core.setFailed(error.message);
