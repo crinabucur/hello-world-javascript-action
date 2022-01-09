@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
+core.setFailed(error.message);
 throw 'Enforced failure';
 
 try {  
