@@ -36,7 +36,7 @@ try {
   
   if (passes === false){
     let pattern = "^\\[" + jiraProjectKey + "-[0-9]+\\]\\ [^\\ ]";
-    let regExp = caseInsensitiveMode ? new RegExp(concatPattern,"ig") : new RegExp(concatPattern,"g");
+    let regExp = caseInsensitiveMode ? new RegExp(pattern,"ig") : new RegExp(pattern,"g");
 
     passes = regExp.test(commitName);
     if (passes === false)
