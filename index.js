@@ -38,7 +38,7 @@ try {
     let pattern = "^\\[" + jiraProjectKey + "-[0-9]+\\]\\ [^\\ ]";
     let regExp = caseInsensitiveMode ? new RegExp(pattern,"ig") : new RegExp(pattern,"g");
 
-    passes = regExp.test(commitName);
+    passes = regExp.test(pullRequestTitle);
     if (passes === false)
       core.setFailed('Commit message does not start with a Jira ticket (i.e. [SYC-123] YourMessage).'); // Pull Request title...
   }
